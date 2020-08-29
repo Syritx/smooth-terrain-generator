@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using OpenTK;
 using OpenTK.Graphics;
@@ -13,6 +13,8 @@ namespace PerlinNoiseGenerator
         Vector3[] heightMaps;
         PerlinNoise perlinNoise;
 
+
+        int vertexCount = (int)Grid.getInformation()[1];
         double yAverage = 0, yOffset = 10;
 
         public Game(int width, int height) : base(width,height,GraphicsMode.Default,"Perlin Noise")
@@ -26,9 +28,6 @@ namespace PerlinNoiseGenerator
 
             yAverage /= heightMaps.Length;
             yAverage += yOffset;
-
-            Console.WriteLine(yAverage);
-
             start();
         }
 
@@ -45,29 +44,29 @@ namespace PerlinNoiseGenerator
 
         void render(object sender, EventArgs e)
         {
-            GL.Rotate(1, 0, 1, 0);
+            GL.Rotate(.25, 0, 1, 0);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             for (int i = 0; i < heightMaps.Length; i++)
             {
-                GL.Begin(PrimitiveType.Quads); // CHANGE THIS TO QUAD
+                GL.Begin(PrimitiveType.LineLoop); // CHANGE THIS TO QUAD
 
                 GL.Color3((double)114 / 255, (double)179 / 255, (double)29 / 255);
                 GL.Vertex3(heightMaps[i]);
 
                 try {
                     //GL.Color3(0, 0, 0);
-                    GL.Vertex3(heightMaps[i + 1]);
+                    if ((int)heightMaps[i].X == (int)heightMaps[i+1].X)
+                        GL.Vertex3(heightMaps[i + 1]);
 
-                    int x1 = (int)heightMaps[i + 16 + 1].X, x2 = (int)heightMaps[i + 16].X;
+                    int x1 = (int)heightMaps[i + vertexCount + 1].X, x2 = (int)heightMaps[i + vertexCount].X;
                     if (x1 == x2) {
                         //GL.Color3(0.5, 0.5, 0.5);
-                        GL.Vertex3(heightMaps[i + 16 + 1]);
-                        GL.Vertex3(heightMaps[i + 16]);
+                        GL.Vertex3(heightMaps[i + vertexCount + 1]);
+                        GL.Vertex3(heightMaps[i + vertexCount]);
                     }
                 }
                 catch (Exception ex) { }
-
                 GL.End();
             }
 
